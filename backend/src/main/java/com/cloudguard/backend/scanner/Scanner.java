@@ -4,6 +4,7 @@ import com.cloudguard.backend.model.SeverityAssessment;
 import com.cloudguard.backend.model.CloudResource;
 import com.cloudguard.backend.model.SecurityFinding;
 import com.cloudguard.backend.model.Severity;
+import com.cloudguard.backend.remediation.RemediationEngine;
 import com.cloudguard.backend.rule.HttpsRule;
 import com.cloudguard.backend.rule.PublicAccessRule;
 import com.cloudguard.backend.rule.SecurityRule;
@@ -14,6 +15,7 @@ import java.util.List;
 public class Scanner {
 
     private List<SecurityRule> rules = new ArrayList<>();
+    private RemediationEngine remediationEngine = new RemediationEngine();
 
     public Scanner() {
     rules.add(new PublicAccessRule());
@@ -25,10 +27,14 @@ public class Scanner {
 
         for (SecurityRule rule : rules) {
 
-            if (rule.check(resource)) {
+           if (rule.check(resource)) {
 
-                findings.add(rule.getFinding());
-            }
+    SecurityFinding finding = rule.getFinding();
+
+    remediationEngine.getRemediation(finding);
+
+    findings.add(finding);
+}
         }
 
         if (findings.isEmpty()) {
