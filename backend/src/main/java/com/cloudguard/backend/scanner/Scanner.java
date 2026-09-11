@@ -1,4 +1,6 @@
 package com.cloudguard.backend.scanner;
+import com.cloudguard.backend.model.ScanResult;
+import com.cloudguard.backend.model.SeverityAssessment;
 import com.cloudguard.backend.model.CloudResource;
 import com.cloudguard.backend.model.SecurityFinding;
 import com.cloudguard.backend.model.Severity;
@@ -17,7 +19,7 @@ public class Scanner {
     rules.add(new PublicAccessRule());
     rules.add(new HttpsRule());
 }
-    public List<SecurityFinding> scan(CloudResource resource) {
+    public ScanResult scan(CloudResource resource) {
 
         List<SecurityFinding> findings = new ArrayList<>();
 
@@ -36,7 +38,8 @@ public class Scanner {
                     "No action required"
             ));
         }
+       Severity overallSeverity = SeverityAssessment.getOverallSeverity(findings);
 
-        return findings;
+return new ScanResult(findings, overallSeverity);
     }
 }

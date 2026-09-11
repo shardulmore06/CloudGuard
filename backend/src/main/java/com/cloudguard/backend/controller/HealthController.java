@@ -1,12 +1,11 @@
 package com.cloudguard.backend.controller;
-
 import com.cloudguard.backend.model.CloudResource;
-import com.cloudguard.backend.model.SecurityFinding;
+import com.cloudguard.backend.model.ScanResult;
 import com.cloudguard.backend.scanner.Scanner;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+
 
 @RestController
 public class HealthController {
@@ -17,7 +16,7 @@ public class HealthController {
     }
 
     @GetMapping("/api/scan")
-    public List<SecurityFinding> scanResource() {
+    public ScanResult scanResource() {
 
         CloudResource resource = new CloudResource(
         "Test Cloud Resource",
