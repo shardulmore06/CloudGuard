@@ -1,22 +1,22 @@
 package com.cloudguard.backend.rule;
 import com.cloudguard.backend.model.FindingType;
-import com.cloudguard.backend.model.Severity;
 import com.cloudguard.backend.model.CloudResource;
 import com.cloudguard.backend.model.SecurityFinding;
+import com.cloudguard.backend.model.Severity;
 
-public class PublicAccessRule implements SecurityRule {
+public class LoggingRule implements SecurityRule {
 
     @Override
     public boolean check(CloudResource resource) {
-        return resource.isPublic();
+        return !resource.isLoggingEnabled();
     }
 
     @Override
-    public SecurityFinding getFinding() {
+public SecurityFinding getFinding() {
     return new SecurityFinding(
-            "Publicly accessible cloud resource",
-            Severity.HIGH,
-            FindingType.PUBLIC_ACCESS
+            "Cloud resource logging is disabled",
+            Severity.MEDIUM,
+            FindingType.LOGGING
     );
 }
 }

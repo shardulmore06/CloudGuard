@@ -1,4 +1,5 @@
 package com.cloudguard.backend.rule;
+import com.cloudguard.backend.model.FindingType;
 import com.cloudguard.backend.model.Severity;
 import com.cloudguard.backend.model.CloudResource;
 import com.cloudguard.backend.model.SecurityFinding;
@@ -11,11 +12,11 @@ public class HttpsRule implements SecurityRule {
     }
 
     @Override
-    public SecurityFinding getFinding() {
-        return new SecurityFinding(
-                "Resource is not using HTTPS",
-                Severity.HIGH,
-                "Enable HTTPS for secure communication"
-        );
-    }
+public SecurityFinding getFinding() {
+    return new SecurityFinding(
+            "Resource is not using HTTPS",
+            Severity.HIGH,
+            FindingType.HTTPS
+    );
+}
 }
