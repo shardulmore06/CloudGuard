@@ -1,9 +1,13 @@
 package com.cloudguard.backend.controller;
 
+import com.cloudguard.backend.model.ScanRequest;
 import com.cloudguard.backend.model.ScanResult;
 import com.cloudguard.backend.model.CloudResource;
 import com.cloudguard.backend.scanner.Scanner;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +25,21 @@ public class ScanController {
                 isPublic,
                 usesHttps,
                 loggingEnabled
+        );
+
+        Scanner scanner = new Scanner();
+
+        return scanner.scan(resource);
+    }
+
+    @PostMapping("/scan")
+    public ScanResult scanPost(@RequestBody ScanRequest request) {
+
+        CloudResource resource = new CloudResource(
+                request.getName(),
+                request.isPublic(),
+                request.isUsesHttps(),
+                request.isLoggingEnabled()
         );
 
         Scanner scanner = new Scanner();
