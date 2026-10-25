@@ -1,112 +1,734 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CloudGuard | Cloud Security Assessment</title>
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="CloudGuard analyzes cloud resource configuration files, identifies security risks, and provides remediation guidance.">
+<title>CloudGuard | Cloud Security Analyzer</title>
+
 <style>
-:root{--bg:#0b1220;--panel:#111c2e;--panel2:#16243a;--line:#26364e;--text:#eaf1fb;--muted:#9aacc4;--accent:#63e6be;--blue:#7aa7ff;--high:#ff6b75;--med:#ffca6b;--low:#63e6be}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#182b48 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.5 Inter,Segoe UI,Arial,sans-serif}
-.wrap{max-width:1120px;margin:auto;padding:28px 20px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:30px}.brand{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#63e6be,#7aa7ff);display:grid;place-items:center;color:#071321;font-size:25px;font-weight:900}.brand h1{font-size:22px;letter-spacing:.2px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.status{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:center}.dot{height:8px;width:8px;border-radius:50%;background:var(--med)}.hero{margin:10px 0 24px}.eyebrow{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:700}.hero h2{font-size:clamp(28px,4vw,42px);line-height:1.1;margin:10px 0}.hero p{color:var(--muted);max-width:720px;margin:0}.grid{display:grid;grid-template-columns: minmax(280px, .9fr) minmax(0,1.4fr);gap:18px}.card{background:rgba(17,28,46,.94);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 14px 38px #0002}.card h3{margin:0 0 5px;font-size:18px}.sub{margin:0 0 20px;color:var(--muted);font-size:13px}.field{margin:16px 0}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}.field input[type=text]{width:100%;background:#0b1526;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px;font-size:14px;outline:none}.field input:focus{border-color:var(--blue)}.toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#0b1526;border:1px solid var(--line);padding:12px;border-radius:11px;margin:10px 0}.toggle span{display:block;font-weight:600;font-size:13px}.toggle small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.toggle input{width:18px;height:18px;accent-color:var(--accent)}button{border:0;cursor:pointer;font-weight:800;border-radius:11px;padding:13px 16px;font-size:14px}.primary{background:var(--accent);color:#071721;width:100%;margin-top:12px}.primary:disabled{opacity:.6;cursor:wait}.secondary{background:#21314a;color:var(--text);border:1px solid var(--line)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.metric{background:#0b1526;border:1px solid var(--line);border-radius:12px;padding:14px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:25px;margin-top:4px}.overall{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);background:#0b1526;border-radius:13px;padding:15px;margin-bottom:16px}.overall p{margin:0;color:var(--muted);font-size:12px}.overall strong{font-size:19px}.pill{font-size:11px;font-weight:800;border-radius:999px;padding:5px 9px;white-space:nowrap}.high{background:#4b202b;color:#ff9ca2}.medium{background:#4b3920;color:#ffdb8b}.low{background:#173e37;color:#8bf0d0}.findings{display:grid;gap:10px}.finding{border:1px solid var(--line);border-radius:12px;padding:15px;background:#0d1728}.finding-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.finding h4{margin:0;font-size:14px}.finding .type{font-size:10px;color:var(--blue);letter-spacing:1px;margin-top:4px}.finding p{margin:10px 0 0;color:var(--muted);font-size:13px}.fix{color:var(--accent)!important}.empty{border:1px dashed var(--line);border-radius:12px;padding:32px 18px;text-align:center;color:var(--muted)}.empty .big{font-size:30px;margin-bottom:8px}.message{margin-top:12px;color:var(--med);font-size:12px;min-height:18px}.foot{margin-top:22px;color:#71849e;font-size:11px;text-align:center}.note{margin-top:14px;background:#13283a;border:1px solid #23465a;color:#a9c5d8;border-radius:11px;padding:12px;font-size:12px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.top{align-items:flex-start}.status{max-width:150px}.summary{grid-template-columns:repeat(3,1fr)}.card{padding:17px}.wrap{padding:18px 13px 35px}}
+:root {
+  --bg: #0b1220;
+  --panel: #111c2e;
+  --panel2: #16243a;
+  --line: #26364e;
+  --text: #eaf1fb;
+  --muted: #9aacc4;
+  --accent: #63e6be;
+  --blue: #7aa7ff;
+  --high: #ff6b75;
+  --med: #ffca6b;
+  --low: #63e6be;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 80% 0%, #182b48 0, transparent 34%),
+    var(--bg);
+  color: var(--text);
+  font: 15px/1.5 Inter, "Segoe UI", Arial, sans-serif;
+}
+
+button, input {
+  font: inherit;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin: auto;
+  padding: 28px 20px 48px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 38px;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.logo {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: grid;
+  place-items: center;
+  color: #071321;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.brand h1 {
+  font-size: 22px;
+  letter-spacing: .2px;
+  margin: 0;
+}
+
+.brand p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.status {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: var(--muted);
+  font-size: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background: var(--med);
+}
+
+.hero {
+  margin: 10px 0 30px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.hero h2 {
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.12;
+  margin: 12px 0;
+  max-width: 760px;
+}
+
+.hero p {
+  color: var(--muted);
+  max-width: 720px;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(280px, .9fr) minmax(0, 1.4fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.card {
+  min-width: 0;
+  background: rgba(17, 28, 46, .94);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 14px 38px #0002;
+}
+
+.card h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.sub {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.note {
+  margin: 16px 0;
+  background: #13283a;
+  border: 1px solid #23465a;
+  color: #a9c5d8;
+  border-radius: 11px;
+  padding: 12px;
+  font-size: 12px;
+}
+
+.field {
+  margin: 20px 0;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+  background: #0b1526;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.file-input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.file-help {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font-weight: 800;
+  border-radius: 11px;
+  padding: 13px 16px;
+  font-size: 14px;
+}
+
+.primary {
+  background: var(--accent);
+  color: #071721;
+  width: 100%;
+  margin-top: 6px;
+  transition: filter .2s, transform .2s;
+}
+
+.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.primary:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.message {
+  margin-top: 12px;
+  color: var(--med);
+  font-size: 12px;
+  min-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.metric {
+  background: #0b1526;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  min-width: 0;
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 4px;
+}
+
+.overall {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--line);
+  background: #0b1526;
+  border-radius: 13px;
+  padding: 15px;
+  margin-bottom: 16px;
+}
+
+.overall p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.overall strong {
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}
+
+.pill {
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.high {
+  background: #4b202b;
+  color: #ff9ca2;
+}
+
+.medium {
+  background: #4b3920;
+  color: #ffdb8b;
+}
+
+.low {
+  background: #173e37;
+  color: #8bf0d0;
+}
+
+.findings {
+  display: grid;
+  gap: 10px;
+}
+
+.finding {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 15px;
+  background: #0d1728;
+}
+
+.finding-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.finding h4 {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.finding .type {
+  font-size: 10px;
+  color: var(--blue);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.finding p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fix {
+  color: var(--accent) !important;
+}
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 32px 18px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty .big {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.empty strong {
+  display: block;
+  color: var(--text);
+}
+
+.empty div:last-child {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.foot {
+  margin-top: 24px;
+  color: #71849e;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top {
+    align-items: flex-start;
+  }
+
+  .status {
+    max-width: 160px;
+  }
+
+  .summary {
+    gap: 7px;
+  }
+
+  .metric {
+    padding: 11px;
+  }
+
+  .metric strong {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 17px;
+  }
+
+  .wrap {
+    padding: 18px 13px 35px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
+
 <body>
 <div class="wrap">
+
   <header class="top">
-    <div class="brand"><div class="logo">◆</div><div><h1>CloudGuard</h1><p>CLOUD SECURITY ASSESSMENT</p></div></div>
-    <div class="status"><span class="dot" id="healthDot"></span><span id="healthText">Checking backend…</span></div>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">◆</div>
+      <div>
+        <h1>CloudGuard</h1>
+        <p>CLOUD SECURITY ASSESSMENT</p>
+      </div>
+    </div>
+
+    <div class="status" role="status" aria-live="polite">
+      <span class="dot" id="healthDot"></span>
+      <span id="healthText">Checking backend…</span>
+    </div>
   </header>
+
   <section class="hero">
     <div class="eyebrow">Security posture overview</div>
     <h2>Find risks before they become incidents.</h2>
-    <p>Evaluate a cloud-resource configuration against basic security checks and get actionable remediation guidance.</p>
+    <p>
+      Analyze cloud-resource configuration files, identify potential security
+      risks, and get actionable remediation guidance in one place.
+    </p>
   </section>
+
   <main class="grid">
-    <section class="card">
-      <h3>Configure a scan</h3><p class="sub">Enter a resource name and select its current settings.</p>
-      <form id="scanForm">
-        <div class="field"><label for="resourceName">Resource name</label><input id="resourceName" type="text" maxlength="100" value="Demo Cloud Resource" required placeholder="e.g. customer-storage"></div>
-        <div class="toggle"><div><span>Public access enabled</span><small>Resource can be reached publicly</small></div><input id="publicResource" type="checkbox" checked></div>
-        <div class="toggle"><div><span>HTTPS enabled</span><small>Traffic uses encrypted transport</small></div><input id="usesHttps" type="checkbox"></div>
-        <div class="toggle"><div><span>Logging enabled</span><small>Activity records are collected</small></div><input id="loggingEnabled" type="checkbox"></div>
-        <button class="primary" id="scanButton" type="submit">⌕ Run security scan</button>
-        <div class="message" id="message" role="status"></div>
-      </form>
-      <div class="note">Demo note: This prototype evaluates the configuration entered here. It does not connect to or scan a live cloud account.</div>
-    </section>
-    <section class="card">
-      <h3>Scan results</h3><p class="sub" id="resultSub">Run a scan to view detected risks and suggested fixes.</p>
-      <div class="summary">
-        <div class="metric"><span>Findings</span><strong id="findingCount">—</strong></div>
-        <div class="metric"><span>High severity</span><strong id="highCount">—</strong></div>
-        <div class="metric"><span>Medium severity</span><strong id="mediumCount">—</strong></div>
+
+    <section class="card" aria-labelledby="uploadHeading">
+      <h3 id="uploadHeading">Analyze a configuration file</h3>
+      <p class="sub">
+        Upload one JSON file containing multiple cloud resources.
+      </p>
+
+      <div class="note">
+        CloudGuard evaluates the configuration you upload. This prototype
+        does not connect to or scan a live cloud account.
       </div>
-      <div class="overall"><div><p>Overall severity</p><strong id="overallSeverity">Awaiting scan</strong></div><span id="overallPill" class="pill low">NOT SCANNED</span></div>
-      <div id="findings" class="findings"><div class="empty"><div class="big">⌘</div><strong>Your findings will appear here</strong><div>Choose settings and run the scanner.</div></div></div>
+
+      <form id="configUploadForm">
+        <div class="field">
+          <label for="configFile">JSON configuration file</label>
+          <input
+            class="file-input"
+            id="configFile"
+            name="file"
+            type="file"
+            accept=".json,application/json"
+            required
+          >
+          <div class="file-help">
+            JSON files only · Maximum 1 MB · Up to 100 resources
+          </div>
+        </div>
+
+        <button class="primary" id="uploadButton" type="submit">
+          Upload and analyze
+        </button>
+
+        <div class="message" id="uploadMessage" role="status" aria-live="polite"></div>
+      </form>
     </section>
+
+    <section class="card" aria-labelledby="resultsHeading">
+      <h3 id="resultsHeading">Scan results</h3>
+      <p class="sub" id="resultSub">
+        Upload a configuration file to view detected risks and suggested fixes.
+      </p>
+
+      <div class="summary">
+        <div class="metric">
+          <span>Findings</span>
+          <strong id="findingCount">—</strong>
+        </div>
+        <div class="metric">
+          <span>High severity</span>
+          <strong id="highCount">—</strong>
+        </div>
+        <div class="metric">
+          <span>Medium severity</span>
+          <strong id="mediumCount">—</strong>
+        </div>
+      </div>
+
+      <div class="overall">
+        <div>
+          <p>Overall severity</p>
+          <strong id="overallSeverity">Awaiting scan</strong>
+        </div>
+        <span id="overallPill" class="pill low">NOT SCANNED</span>
+      </div>
+
+      <div id="findings" class="findings" aria-live="polite">
+        <div class="empty">
+          <div class="big" aria-hidden="true">⌘</div>
+          <strong>Your findings will appear here</strong>
+          <div>Upload a JSON configuration to begin.</div>
+        </div>
+      </div>
+    </section>
+
   </main>
-  <div class="foot">CloudGuard • Academic security assessment prototype • Use findings as guidance and verify configurations in your cloud provider.</div>
+
+  <footer class="foot">
+    CloudGuard · Academic security assessment prototype ·
+    Review findings and verify configurations in your cloud provider.
+  </footer>
+
 </div>
+
 <script>
 const $ = id => document.getElementById(id);
-function severityClass(s){return s==="HIGH"?"high":s==="MEDIUM"?"medium":"low"}
-async function checkHealth(){
-  try{
-    const r=await fetch('/api/health');
-    if(!r.ok) throw new Error('Backend unavailable');
-    $('healthDot').style.background='var(--accent)';
-    $('healthText').textContent='Backend connected';
-  }catch(e){
-    $('healthDot').style.background='var(--high)';
-    $('healthText').textContent='Backend unavailable';
+
+function severityClass(severity) {
+  if (severity === 'HIGH') return 'high';
+  if (severity === 'MEDIUM') return 'medium';
+  return 'low';
+}
+
+async function checkHealth() {
+  try {
+    const response = await fetch('/api/health');
+
+    if (!response.ok) {
+      throw new Error('Backend unavailable');
+    }
+
+    $('healthDot').style.background = 'var(--accent)';
+    $('healthText').textContent = 'Backend connected';
+  } catch (error) {
+    $('healthDot').style.background = 'var(--high)';
+    $('healthText').textContent = 'Backend unavailable';
   }
 }
-function renderResults(data){
-  const list=Array.isArray(data.findings)?data.findings:[];
-  $('findingCount').textContent=list.length;
-  $('highCount').textContent=list.filter(f=>f.severity==='HIGH').length;
-  $('mediumCount').textContent=list.filter(f=>f.severity==='MEDIUM').length;
-  const overall=data.overallSeverity||'UNKNOWN';
-  $('overallSeverity').textContent=overall;
-  $('overallPill').textContent=overall;
-  $('overallPill').className='pill '+severityClass(overall);
-  $('resultSub').textContent='Scan completed for '+$('resourceName').value.trim()+'.';
-  const container=$('findings'); container.replaceChildren();
-  if(!list.length){
-    container.innerHTML='<div class="empty"><div class="big">✓</div><strong>No findings returned</strong><div>Review the scan response for details.</div></div>';
+
+function renderResults(data, label = 'Security scan results') {
+  const findings = Array.isArray(data.findings) ? data.findings : [];
+
+  $('findingCount').textContent = findings.length;
+  $('highCount').textContent =
+    findings.filter(f => f.severity === 'HIGH').length;
+  $('mediumCount').textContent =
+    findings.filter(f => f.severity === 'MEDIUM').length;
+
+  const overall = data.overallSeverity || 'UNKNOWN';
+
+  $('overallSeverity').textContent = overall;
+  $('overallPill').textContent = overall;
+  $('overallPill').className = 'pill ' + severityClass(overall);
+  $('resultSub').textContent = label;
+
+  const container = $('findings');
+  container.replaceChildren();
+
+  if (findings.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+
+    const title = document.createElement('strong');
+    title.textContent = 'No findings returned';
+
+    empty.appendChild(title);
+    container.appendChild(empty);
     return;
   }
-  list.forEach(f=>{
-    const article=document.createElement('article'); article.className='finding';
-    const head=document.createElement('div'); head.className='finding-head';
-    const titleWrap=document.createElement('div');
-    const title=document.createElement('h4'); title.textContent=f.problem||'Security finding';
-    const type=document.createElement('div'); type.className='type'; type.textContent=f.type||'GENERAL';
-    titleWrap.append(title,type);
-    const badge=document.createElement('span'); badge.className='pill '+severityClass(f.severity); badge.textContent=f.severity||'UNKNOWN';
-    head.append(titleWrap,badge);
-    const fix=document.createElement('p'); fix.className='fix'; fix.textContent='Suggested fix: '+(f.solution||'Review this configuration.');
-    article.append(head,fix); container.append(article);
+
+  findings.forEach(finding => {
+    const article = document.createElement('article');
+    article.className = 'finding';
+
+    const header = document.createElement('div');
+    header.className = 'finding-head';
+
+    const titleWrap = document.createElement('div');
+
+    const title = document.createElement('h4');
+    title.textContent = finding.problem || 'Security finding';
+
+    const type = document.createElement('div');
+    type.className = 'type';
+    type.textContent = finding.type || 'GENERAL';
+
+    titleWrap.append(title, type);
+
+    const badge = document.createElement('span');
+    badge.className = 'pill ' + severityClass(finding.severity);
+    badge.textContent = finding.severity || 'UNKNOWN';
+
+    header.append(titleWrap, badge);
+
+    const fix = document.createElement('p');
+    fix.className = 'fix';
+    fix.textContent =
+      'Suggested fix: ' +
+      (finding.solution || 'Review this configuration.');
+
+    article.append(header, fix);
+    container.appendChild(article);
   });
 }
-$('scanForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const button=$('scanButton'); button.disabled=true; button.textContent='Scanning…'; $('message').textContent='';
-  const body={
-    name:$('resourceName').value.trim(),
-    publicResource:$('publicResource').checked,
-    usesHttps:$('usesHttps').checked,
-    loggingEnabled:$('loggingEnabled').checked
-  };
-  try{
-    const response=await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!response.ok){const detail=await response.text();throw new Error(detail||'HTTP '+response.status)}
-    const data=await response.json(); renderResults(data); $('message').textContent='Scan completed successfully.';
-  }catch(err){
-    $('message').textContent='Could not complete scan. Check that Spring Boot is running. '+err.message;
-  }finally{button.disabled=false;button.textContent='⌕ Run security scan'}
+
+$('configUploadForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const file = $('configFile').files[0];
+
+  if (!file) {
+    $('uploadMessage').textContent = 'Please select a JSON file.';
+    return;
+  }
+
+  const button = $('uploadButton');
+  const message = $('uploadMessage');
+
+  button.disabled = true;
+  button.textContent = 'Analyzing file…';
+  message.textContent = '';
+
+  try {
+    if (!file.name.toLowerCase().endsWith('.json')) {
+      throw new Error('Please select a JSON file.');
+    }
+
+    if (file.size > 1024 * 1024) {
+      throw new Error('File must be 1 MB or smaller.');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/scan/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(
+        details || 'The server returned HTTP ' + response.status
+      );
+    }
+
+    const results = await response.json();
+
+    if (!Array.isArray(results) || results.length === 0) {
+      throw new Error('No resource results were returned.');
+    }
+
+    const combinedFindings = [];
+    const severityRank = {
+      LOW: 1,
+      MEDIUM: 2,
+      HIGH: 3
+    };
+
+    let overallSeverity = 'LOW';
+
+    results.forEach(item => {
+      const result = item.result;
+
+      if (!result || !Array.isArray(result.findings)) {
+        throw new Error('Unexpected result format from the server.');
+      }
+
+      const resourceSeverity = result.overallSeverity || 'LOW';
+
+      if (
+        (severityRank[resourceSeverity] || 0) >
+        (severityRank[overallSeverity] || 0)
+      ) {
+        overallSeverity = resourceSeverity;
+      }
+
+      result.findings.forEach(finding => {
+        combinedFindings.push({
+          ...finding,
+          problem:
+            (item.resourceName || 'Resource') +
+            ': ' +
+            (finding.problem || 'Security finding')
+        });
+      });
+    });
+
+    renderResults(
+      {
+        findings: combinedFindings,
+        overallSeverity: overallSeverity
+      },
+      'Analyzed ' + results.length +
+      ' resource(s) from ' + file.name
+    );
+
+    message.textContent =
+      'Analysis completed for ' + results.length + ' resource(s).';
+  } catch (error) {
+    message.textContent = 'Upload failed: ' + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Upload and analyze';
+  }
 });
+
 checkHealth();
 </script>
 </body>
