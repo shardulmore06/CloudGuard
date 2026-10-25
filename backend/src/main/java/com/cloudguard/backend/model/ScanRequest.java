@@ -1,3 +1,4 @@
+
 package com.cloudguard.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -5,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScanRequest {
 
     private String name;
-
-    @JsonProperty("isPublic")
     private boolean publicResource;
-
     private boolean usesHttps;
     private boolean loggingEnabled;
 
@@ -16,15 +14,32 @@ public class ScanRequest {
         return name;
     }
 
+    @JsonProperty("publicResource")
+    public void setPublicResource(boolean publicResource) {
+        this.publicResource = publicResource;
+    }
+
     public boolean isPublic() {
         return publicResource;
+    }
+
+    public void setUsesHttps(boolean usesHttps) {
+        this.usesHttps = usesHttps;
     }
 
     public boolean isUsesHttps() {
         return usesHttps;
     }
 
+    public void setLoggingEnabled(boolean loggingEnabled) {
+        this.loggingEnabled = loggingEnabled;
+    }
+
     public boolean isLoggingEnabled() {
         return loggingEnabled;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
